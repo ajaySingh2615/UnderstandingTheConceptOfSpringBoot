@@ -13,7 +13,7 @@ public class CustomerService {
 
     private final CustomerDao customerDao;
 
-    public CustomerService(@Qualifier("jpa") CustomerDao customerDao) {
+    public CustomerService(@Qualifier("jdbc") CustomerDao customerDao) {
         this.customerDao = customerDao;
     }
 
@@ -57,25 +57,28 @@ public class CustomerService {
         customerDao.deleteCustomerById(customerId);
     }
 
-    public void updateCustomer(Long customerId, CustomerUpdateRequest updateRequest){
-        Customer customer = getCustomer(customerId);
+    public void updateCustomer(Long customerId,
+                               CustomerUpdateRequest updateRequest) {
+        // TODO: for JPA use .getReferenceById(customerId) as it does does not bring object into memory and instead a reference
+        Customer customer = customerDao.selectCustomerById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "customer with id [%s] not found".formatted(customerId)
+                ));
 
         boolean changes = false;
 
-        if(updateRequest.name() != null && !updateRequest.name().equals(customer.getName())){
+        if (updateRequest.name() != null && !updateRequest.name().equals(customer.getName())) {
             customer.setName(updateRequest.name());
-            customerDao.insertCustomer(customer);
             changes = true;
         }
 
-        if(updateRequest.age() != null && !updateRequest.age().equals(customer.getAge())){
+        if (updateRequest.age() != null && !updateRequest.age().equals(customer.getAge())) {
             customer.setAge(updateRequest.age());
-            customerDao.insertCustomer(customer);
             changes = true;
         }
 
-        if(updateRequest.email() != null && !updateRequest.email().equals(customer.getEmail())){
-            if(customerDao.exitsPersonWithEmail(updateRequest.email())){
+        if (updateRequest.email() != null && !updateRequest.email().equals(customer.getEmail())) {
+            if (customerDao.exitsPersonWithEmail(updateRequest.email())) {
                 throw new DuplicateResourceException(
                         "email already taken"
                 );
@@ -84,7 +87,7 @@ public class CustomerService {
             changes = true;
         }
 
-        if(!changes){
+        if (!changes) {
             throw new RequestValidationException("no data changes found");
         }
 
