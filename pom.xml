@@ -9,12 +9,17 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ajay</groupId>
-    <artifactId>UnderstandingTheConceptOfSpringBoot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>understanding-the-concept-of-spring-boot</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <organization>
+        <name>cadt14</name>
+        <url>https://cadt14.com</url>
+    </organization>
     <name>UnderstandingTheConceptOfSpringBoot</name>
     <description>UnderstandingTheConceptOfSpringBoot</description>
     <properties>
         <java.version>17</java.version>
+        <docker.username>cadt14</docker.username>
     </properties>
     <dependencies>
 
@@ -158,6 +163,33 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <from>
+                        <image>eclipse-temurin:17</image>
+                        <platforms>
+                            <platform>
+                                <architecture>arm64</architecture>
+                                <os>linux</os>
+                            </platform>
+                            <platform>
+                                <architecture>arm64</architecture>
+                                <os>linux</os>
+                            </platform>
+                        </platforms>
+                    </from>
+                    <to>
+                        <image>docker.io/${docker.username}/${project.artifactId}:${project.version}</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                </configuration>
             </plugin>
 
         </plugins>
